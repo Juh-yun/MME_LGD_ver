@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from torchvision import transforms
 from PIL import Image
+from torch.utils import data
 
 
 class ResizeImage():
@@ -16,7 +17,12 @@ class ResizeImage():
         th, tw = self.size
         return img.resize((th, tw))
 
-
+# Dataloader 작성법
+# 1. 데이터 파일 경로 설정
+# 2. 이미지 전처리 (transform)
+# 3. Dataset을 상속받아 나만의 데이터셋 인스턴스 생성 클래스 구현
+# 4. Dataloader에 데이터셋 입력하여 사용
+    
 def create_dataset(args):
     """
     주어진 dataset을 load하여, dataloader를 return
@@ -163,7 +169,7 @@ def return_classlist(image_list):
     return label_list
 
 
-class Imagelists(object):
+class Imagelists(data.Dataset):
     def __init__(self, image_list, root="./data/multi/", transform=None, target_transform=None, test=False):
 
         imgs, labels = make_dataset_fromlist(image_list)
