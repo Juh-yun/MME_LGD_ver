@@ -102,13 +102,13 @@ def create_dataset(args):
     return source_loader, target_loader, target_loader_unl, target_loader_val, target_loader_test, class_list
 
 
+
 def create_dataset_test(args):
     base_path = './data/txt/%s' % args.dataset
     root = './data/%s/' % args.dataset
-    image_set_file_s = os.path.join(base_path, args.source + '_all' + '.txt')
-    image_set_file_test = os.path.join(base_path,
-                                       'unlabeled_target_images_' +
-                                       args.target + '_%d.txt' % (args.num))
+    image_set_file_s = os.path.join(base_path, 'labeled_source_images_' + args.source + '.txt')
+    image_set_file_test = os.path.join(base_path, 'unlabeled_target_images_' + args.target + '_%d.txt' % (args.num))
+
     if args.net == 'alexnet':
         crop_size = 227
     else:
@@ -123,16 +123,14 @@ def create_dataset_test(args):
         ]),
     }
 
-    target_dataset_unl = Imagelists(image_set_file_test, root=root,
-                                          transform=data_transforms['test'],
-                                          test=True)
+    target_dataset_unl = Imagelists(image_set_file_test, root=root,transform=data_transforms['test'], test=True)
     class_list = return_classlist(image_set_file_s)
 
     print("%d classes in this dataset" % len(class_list))
 
     target_loader_unl = \
         torch.utils.data.DataLoader(target_dataset_unl,
-                                    batch_size=args.bs * 2, num_workers=3,
+                                    batch_size=args.bs, num_workers=3,
                                     shuffle=False, drop_last=False)
     return target_loader_unl, class_list
 
