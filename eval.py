@@ -9,7 +9,6 @@ import numpy as np
 from tqdm import tqdm
 from model.basenet import AlexNetBase, VGGBase, Predictor, Predictor_deep
 from create_dataset import create_dataset_test
-from plot_confusion_matrix import plot_confusion_matrix
 import matplotlib.pyplot as plt
 
 # Training settings
