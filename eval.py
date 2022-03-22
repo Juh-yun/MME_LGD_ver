@@ -5,12 +5,12 @@ import argparse
 import os
 import torch
 from model.resnet import resnet34, resnet50
-from torch.autograd import Variable
 import numpy as np
 from tqdm import tqdm
 from model.basenet import AlexNetBase, VGGBase, Predictor, Predictor_deep
 from create_dataset import create_dataset_test
 from plot_confusion_matrix import plot_confusion_matrix
+import matplotlib.pyplot as plt
 
 # Training settings
 parser = argparse.ArgumentParser(description='Visda Classification')
@@ -111,6 +111,36 @@ def evaluate(loader, class_list, G, F1, step, topk, output_file="output.txt"):
             print('Top {} Accuracy: {}/{} ({:.0f}%)\n'.format(topk, correct_topk, size, 100. * correct_topk / size))
 
 
+def plot_confusion_matrix(cm, classes, step, class_name=False):
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    ax.figure.colorbar(im, ax=ax)
+
+    if class_name:
+        classes = ['label{}'.format(i) for i in range(len(classes))]
+        title = 'confusion matrix'
+
+        ax.set(xticks=np.arange(cm.shape[1]),
+               yticks=np.arange(cm.shape[0]),
+               xticklabels=classes, yticklabels=classes,
+               title=title,
+               ylabel='True label',
+               xlabel='Predicted label')
+
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+                 rotation_mode="anchor")
+        plt.savefig('confusion_matrix_step_{}.png'.format(step))
+    else:
+        title = 'confusion matrix'
+
+        ax.set(title=title,
+               ylabel='True label',
+               xlabel='Predicted label')
+
+        plt.savefig('confusion_matrix_step_{}.png'.format(step))
+
 if __name__ == '__main__':
     main()
+
 
