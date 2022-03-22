@@ -25,8 +25,8 @@ parser.add_argument('--target', type=str, default='clipart', metavar='B', help='
 parser.add_argument('--dataset', type=str, default='multi', choices=['multi'], help='the name of dataset, multi is large scale dataset')
 
 parser.add_argument('--num', type=int, default=3, help='number of labeled examples in the target')
-parser.add_argument('--bs', type=int, default=24, metavar='BS', help='Batch size (default | Alexnet:32, Others:24) ') # batch size ( S: x, T : x, uT : 2x)
 parser.add_argument('--topk', type=int, default=5, help='top-k')
+parser.add_argument('--bs', type=int, default=24, metavar='BS', help='Batch size')
 
 args = parser.parse_args()
 
@@ -53,7 +53,6 @@ def main():
         inc = 4096
     else:
         raise ValueError('Model cannot be recognized.')
-
 
     if "resnet" in args.net:
         F1 = Predictor_deep(num_class=len(class_list), inc=inc)
@@ -86,7 +85,6 @@ def evaluate(loader, class_list, G, F1, step, topk, output_file="output.txt"):
 
     with open(output_file, "w") as f:
         with torch.no_grad():
-
             for _, (im_data_t, gt_labels_t, paths) in tqdm(enumerate(loader)):
 
                 im_data_t, gt_labels_t = im_data_t.to(device), gt_labels_t.long().to(device)
@@ -102,7 +100,7 @@ def evaluate(loader, class_list, G, F1, step, topk, output_file="output.txt"):
                     confusion_matrix[t.long(), p.long()] += 1
 
                 correct += pred.eq(gt_labels_t.data).cpu().sum()
-                correct_topk += pred_topk.eq(gt_labels_t.view(-1, 1).expand_as(pred_topk))
+                correct_topk += pred_topk.eq(gt_labels_t.view(-1, 1).expand_as(pred_topk)).cpu().sum()
 
                 for i, path in enumerate(paths):
                     f.write("%s %d\n" % (path, pred[i]))
@@ -110,6 +108,7 @@ def evaluate(loader, class_list, G, F1, step, topk, output_file="output.txt"):
             plot_confusion_matrix(confusion_matrix, class_list, step, class_name=False)
 
             print('\nAccuracy: {}/{} ({:.0f}%)\n'.format(correct, size, 100. * correct / size))
+            print('Top {} Accuracy: {}/{} ({:.0f}%)\n'.format(topk, correct_topk, size, 100. * correct_topk / size))
 
 
 if __name__ == '__main__':
