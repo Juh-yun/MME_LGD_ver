@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description='SSDA Classification')
 
 parser.add_argument('--steps', type=int, default=50000, metavar='N', help='maximum number of iterations to train (default: 50000)') # Step 수
-parser.add_argument('--net', type=str, default='vgg', choices=['alexnet', 'vgg', 'resnet34', 'resnet50'], help='which network to use') # Feature extractor로 사용될 network 선택
+parser.add_argument('--net', type=str, default='resnet34', choices=['alexnet', 'vgg', 'resnet34', 'resnet50'], help='which network to use') # Feature extractor로 사용될 network 선택
 parser.add_argument('--source', type=str, default='real', help='source domain')     # Source dataset 선택
 parser.add_argument('--target', type=str, default='clipart', help='target domain')  # target dataset 선택
 
